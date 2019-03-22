@@ -1,0 +1,82 @@
+#r "Newtonsoft.Json"
+
+using System;
+using System.Net;
+using Newtonsoft.Json;
+using System.Net.Mail;
+
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+//using SendGrid.Helpers.Mail;
+
+public static void Run(string myIoTHubMessage, ILogger log)//, out Mail message)
+{
+    log.LogInformation($"C# IoT Hub trigger function processed a message: {myIoTHubMessage}");
+    
+    DateTime now = DateTime.Now;
+    DateTime now1 = now.AddHours(-8);
+    log.LogInformation(now1.ToString("F"));
+
+    string fromEmail = "kk3117@gmail.com";
+    string toEmail = "pranavudupa94@gmail.com";
+    int smtpPort = 587;
+    bool smtpEnableSsl = true;
+    string smtpHost = "smtp.gmail.com"; // your smtp host
+    string smtpUser = "kk3117@gmail.com"; // your smtp user
+    string smtpPass = // your smtp password
+    string subject = "Your door is unlocked. Remember to lock it please";
+    string message = "Your door is unlocked. Remember to lock it please";
+
+    MailMessage mail = new MailMessage(fromEmail, toEmail);
+    SmtpClient client = new SmtpClient();
+    client.Port = smtpPort;
+    client.EnableSsl = smtpEnableSsl;
+    client.DeliveryMethod = SmtpDeliveryMethod.Network;
+    client.UseDefaultCredentials = false;
+    client.Host = smtpHost;
+    client.Credentials = new System.Net.NetworkCredential(smtpUser, smtpPass);
+    mail.Subject = message;
+    
+    mail.Body = message;
+    try {
+      client.Send(mail);
+      log.LogInformation("Email sent");
+      //return req.CreateResponse(HttpStatusCode.OK, new {
+       //     status = true,
+        //    message = string.Empty
+        //});
+      //return (ActionResult)new OkResult();
+    }
+    catch (Exception ex) {
+      log.LogInformation(ex.ToString() + "hello");
+      //return req.CreateResponse(HttpStatusCode.InternalServerError, new {
+        //    status = false,
+        //    message = "Message has not been sent. Check Azure Function Logs for more information."
+        //});
+      //taskCollection = null;
+      //return (ActionResult)new BadRequestResult();
+    }
+
+
+
+    /*message = new Mail();
+    var client = new SendGridClient("ENTER-YOUR-API-KEY-HERE");
+            var msg = new SendGridMessage();
+
+            msg.SetFrom(new EmailAddress("a@gmail.com", "Azure Tips and Tricks"));
+
+            var recipients = new List<EmailAddress>
+                {
+                    new EmailAddress("a@gmail.com"),
+                    new EmailAddress("b@gmail.com"),
+                    new EmailAddress("c@gmail.com")
+                };
+            msg.AddTos(recipients);
+
+            msg.SetSubject("Mail from Azure and SendGrid");
+
+            msg.AddContent(MimeType.Text, "This is just a simple test message!");
+            msg.AddContent(MimeType.Html, "<p>This is just a simple test message!</p>");
+            var response = await client.SendEmailAsync(msg);*/
+}
